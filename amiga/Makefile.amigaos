@@ -1,0 +1,112 @@
+# FreeSiege for GFOS (AmigaOS 3.2 with GFOpenUp), 68040/68060 + FPU, on
+# GFOpenUp's SDL 2 (LIBS:GFOpenGPU/SDL2.module, SDL2_image.module,
+# SDL2_mixer.module and SDL2_ttf.module).
+#
+#   make -f amiga/Makefile.amigaos -j4 [STOVE=/path/to/os32-gcc16-open6]
+#
+# STOVE is a GFOpenAmigaGCC 16.2.0-open6 stove: its prefix/ has the
+# compiler, the NDK and GFOpenGPU's SDL 2 kit (prefix/m68k-amigaos).
+# The sources are CMakeLists.txt's freesiege target without network play
+# (upstream's default, NET_ENABLED off). The data are read from the game's
+# drawer (FREESIEGE_DATA_DIR "PROGDIR:", as upstream's packaged build).
+#
+# Output: build/amigaos/FreeSiege/ (the drawer: FreeSiege, the data, User/,
+# ReadMe, Controls, the licences, with GlowIcons), build/amigaos/FreeSiege.info
+# and Install-FreeSiege beside them.
+
+STOVE   ?= $(HOME)/AmiCradle/stoves/os32-gcc16-open6
+PREFIX  ?= $(STOVE)/prefix
+KIT     ?= $(PREFIX)/m68k-amigaos
+CXX     = $(PREFIX)/bin/m68k-amigaos-g++
+CPU     ?= -m68040 -m68881
+# -fno-tree-loop-distribute-patterns: GCC 16's loop miscompile (the kit's
+# sdl2-config gives it for GCC 16 too).
+OPT     ?= -O2 -fomit-frame-pointer -fno-tree-loop-distribute-patterns
+
+DEFS    = -D__amigaos__ -DFREESIEGE_DATA_DIR=\"PROGDIR:\" \
+          -DFREESIEGE_ICON_PATH=\"PROGDIR:freesiege.png\"
+INC     = -Icommon -Iengine -Igui -Iunits -I$(KIT)/include/SDL2 -I$(KIT)/include
+CXXFLAGS = -noixemul $(OPT) $(CPU) -std=gnu++11 $(DEFS) $(INC)
+LDFLAGS = -noixemul $(CPU)
+LIBS    = -L$(KIT)/lib -lSDL2_ttf -lSDL2_mixer -lSDL2_image -lSDL2 -lpthread -latomic -lm
+
+BUILD   = build/amigaos
+OBJDIR  = $(BUILD)/obj
+OUT     = $(BUILD)/FreeSiege
+PROG    = FreeSiege
+
+SRC     = freesiege.cpp \
+          common/options.cpp \
+          common/utils.cpp \
+          engine/anim.cpp \
+          engine/collisionmatrix.cpp \
+          engine/combinaison.cpp \
+          engine/combinaisoncollection.cpp \
+          engine/gamepad.cpp \
+          engine/message.cpp \
+          engine/musiccollection.cpp \
+          engine/sprite.cpp \
+          engine/spritecollection.cpp \
+          gui/background.cpp \
+          gui/battlefield.cpp \
+          gui/board.cpp \
+          gui/boardabstract.cpp \
+          gui/boardnetwork.cpp \
+          gui/boardsurvivor.cpp \
+          gui/combinaisonscreen.cpp \
+          gui/foreground.cpp \
+          gui/gamescreen.cpp \
+          gui/lifebar.cpp \
+          gui/menu.cpp \
+          gui/menuscreen.cpp \
+          units/ball.cpp \
+          units/dragon.cpp \
+          units/druid.cpp \
+          units/explosion.cpp \
+          units/flame.cpp \
+          units/golem.cpp \
+          units/knight.cpp \
+          units/plant.cpp \
+          units/ram.cpp \
+          units/soldier.cpp \
+          units/unit.cpp \
+          units/veteran.cpp \
+          amiga/amiga_start.cpp
+OBJS    = $(SRC:%.cpp=$(OBJDIR)/%.o)
+
+DATA    = combi.cfg sprites.cfg anims.cfg musics.cfg Swift.ttf freesiege.png
+
+all: $(OUT)/$(PROG) package
+
+$(OUT)/$(PROG): $(OBJS)
+	@mkdir -p $(OUT)
+	$(CXX) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+
+package: $(OUT)/$(PROG) AMIGA_PORT.md amiga/Licences.txt amiga/Controls
+	mkdir -p $(OUT)/User
+	rm -rf $(OUT)/sprites $(OUT)/sounds $(OUT)/anims
+	cp -R sprites sounds anims $(OUT)/
+	cp $(DATA) $(OUT)/
+	cp COPYING $(OUT)/Licence.txt
+	cp AUTHORS $(OUT)/Authors.txt
+	cp Swift_license.txt $(OUT)/Swift_license.txt
+	cp amiga/Controls $(OUT)/Controls
+	cp AMIGA_PORT.md $(OUT)/ReadMe
+	cp amiga/Licences.txt $(OUT)/Licences.txt
+	cp amiga/icons/FreeSiege.info amiga/icons/ReadMe.info $(OUT)/
+	for f in Licence.txt Licences.txt Authors.txt Swift_license.txt Controls; do \
+	    cp amiga/icons/ReadMe.info $(OUT)/$$f.info; done
+	cp amiga/icons/Data.info $(OUT)/User.info
+	cp amiga/icons/FreeSiege-drawer.info $(BUILD)/FreeSiege.info
+	cp amiga/Install-FreeSiege amiga/Install-FreeSiege.info $(BUILD)/
+
+$(OBJDIR)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+objs: $(OBJS)
+
+clean:
+	rm -rf $(BUILD)
+
+.PHONY: all package objs clean

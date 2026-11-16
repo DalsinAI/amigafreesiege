@@ -67,6 +67,11 @@ std::string number_as_roman(int iNumber) {
 }
 
 std::string config_file() {
+#ifdef __amigaos__
+	// AmigaOS: the settings live in the game drawer's User directory, which
+	// the Installer keeps on an update (amiga/amiga_start.cpp makes it).
+	return std::string("PROGDIR:User/freesiege.cfg");
+#endif
 	std::string conf_path = string(CONFIG_NOM);
 #ifndef MACOS9
 	if(getenv(DOSS_PREFS) != NULL) {

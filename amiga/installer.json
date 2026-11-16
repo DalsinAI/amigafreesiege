@@ -1,0 +1,14 @@
+{
+  "name": "FreeSiege",
+  "version": "1.0-gfos1",
+  "drawer": "FreeSiege",
+  "program": "FreeSiege",
+  "cpu": "68040",
+  "fpu": true,
+  "space": 25000000,
+  "modules": ["SDL2.module", "SDL2_image.module", "SDL2_mixer.module", "SDL2_ttf.module"],
+  "keep": ["User"],
+  "parent": "Work:Games",
+  "badge": "icons/art/freesiege.png",
+  "script": "Install-FreeSiege"
+}
