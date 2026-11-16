@@ -1,0 +1,17 @@
+FreeSiege: controls
+===================
+
+Two players at one keyboard (Options, then Keys, changes them; they are
+kept in the drawer's User drawer):
+
+               Player 1      Player 2
+  Up           Cursor up     E
+  Left         Cursor left   S
+  Down         Cursor down   D
+  Right        Cursor right  F
+  Select/Swap  O             Q
+  Validate     P             W
+
+Swap blocks to build the patterns ("Patterns" in the menu shows them),
+then validate to send the unit at the other castle. A joystick or gamepad
+works too (directions, buttons A and B).

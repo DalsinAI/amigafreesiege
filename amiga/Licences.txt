@@ -1,0 +1,20 @@
+FreeSiege: licences
+===================
+
+The game: FreeSiege by Pierre Gueth and Joel Schaerer, a block war game
+for two players, from gitlab.com/LibreGames/freesiege at commit
+7205754874bdadde73191e396ad064ec2382bcb7.
+
+- The code: GNU GPL 3 or later (Licence.txt). The port's change to it
+  (common/utils.cpp) is under the same licence; the source of this build
+  is in DalsinAI/amigafreesiege on GitHub.
+- The pictures (sprites/, anims/): GPL 2 or later, CC-BY 3.0 or
+  CC-BY-SA 3.0, each with its authors as Authors.txt lists them (from
+  OpenGameArt.org and Battle for Wesnoth).
+- The music (sounds/): by Ozzed, CC-BY-SA 3.0 (sounds/License.txt).
+- The font (Swift.ttf): GPL 2 (Swift_license.txt).
+- The Amiga port's own files (amiga/, AMIGA_PORT.md, package/, tools/,
+  tests/) are MIT, Copyright (c) 2026 AmiCradle Team. The GlowIcons are
+  drawn from upstream's freesiege.png.
+
+Designed, tested and delivered by The AmiCradle Team.
